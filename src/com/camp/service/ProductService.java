@@ -46,6 +46,12 @@ public class ProductService {
 		dao.deleteOne(productId);
 		dao.closeConn();
 	}
+	
+	public void update(ProductBean pdb) throws SQLException {
+		dao.createConn();
+		dao.update(pdb);
+		dao.closeConn();
+	}
 
 }
 

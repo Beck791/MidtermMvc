@@ -55,7 +55,7 @@ public class GetAllProduct2 extends HttpServlet {
 //			for(ProductBean pdb : pdbs) ;
 			stmt.close();
 			request.setAttribute("pdbs", pdbs);
-			request.getRequestDispatcher("/product/GetAllProduct.jsp").forward(request, response);
+			request.getRequestDispatcher("/MidtermMvc/product/GetAllProduct.jsp").forward(request, response);
 			 
 			
 		} catch (Exception e) {

@@ -8,6 +8,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
 import com.camp.bean.ProductBean;
 
 public class ProductDaoImp implements ProductDao {
@@ -22,7 +26,6 @@ public class ProductDaoImp implements ProductDao {
 	@Override
 	public void insert(ProductBean pdb) {
 		try {
-			createConn();
 			String sqlStr = "INSERT INTO Product(product,brand,price,productNo,stock,category,brandId)VALUES(?,?,?,?,?,?,?)";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setString(1, pdb.getProduct());
@@ -42,7 +45,7 @@ public class ProductDaoImp implements ProductDao {
 	@Override
 	public void update(ProductBean pdb) {
 		try {
-			createConn();
+//			createConn();
 			String sqlStr = "UPDATE product SET product=?,brand=?,price=?,productNo=?,stock=?,category=?,brandId=? WHERE productId =?";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setString(1, pdb.getProduct());
@@ -52,10 +55,11 @@ public class ProductDaoImp implements ProductDao {
 			pstmt.setInt(5, pdb.getStock());
 			pstmt.setString(6, pdb.getCategory());
 			pstmt.setInt(7, pdb.getBrandId());
+			pstmt.setInt(8, pdb.getProductId());
 			pstmt.executeUpdate();
 			pstmt.close();
 //			System.out.println("Update count = " + num);
-			closeConn();
+//			closeConn();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -79,14 +83,14 @@ public class ProductDaoImp implements ProductDao {
 	public void deleteOne(int productId) {
 
 		try {
-			createConn();
+//			createConn();
 			String sqlStr = "DELETE FROM product WHERE productId = ? ";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, productId);
 			pstmt.executeUpdate();
 			pstmt.close();
 //			System.out.println("Delete count = " + num);
-			closeConn();
+//			closeConn();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -147,7 +151,7 @@ public class ProductDaoImp implements ProductDao {
 
 	@Override
 	public ProductBean querylast() throws SQLException {
-		createConn();
+//		createConn();
 		ProductBean pdb = null;
 		PreparedStatement stmt1 = conn.prepareStatement("SELECT TOP (1) * FROM Product ORDER BY productId DESC");
 		ResultSet rs = stmt1.executeQuery();
@@ -162,19 +166,20 @@ public class ProductDaoImp implements ProductDao {
 			pdb.setCategory(rs.getString("category"));
 			pdb.setBrandId(rs.getInt("brandId"));
 		}
-		createConn();
+//		closeConn();
 		return pdb;
 	}
 
 	@Override
 	public void createConn() {
 		try {
-			Class.forName(JDBC_DRIVER);
-			conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+//			Class.forName(JDBC_DRIVER);
+//			conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+			Context context = new InitialContext();
+			DataSource ds = (DataSource)context.lookup("java:/comp/env/Midterm/servdb");
+			conn = ds.getConnection();
 //			System.out.println("SQL Sever Connection open status: " + !conn.isClosed());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
